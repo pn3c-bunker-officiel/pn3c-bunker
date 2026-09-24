@@ -1,1 +1,21 @@
-{"name":"PN3C BUNKER","short_name":"PN3C","start_url":"index.html","display":"standalone","background_color":"#000","theme_color":"#d4af37"}
+{
+  "name": "PN3C BUNKER OFFICIEL",
+  "short_name": "PN3C BUNKER",
+  "description": "Le Bunker sécurisé du PN3C - Messagerie chiffrée et Coffre-fort",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#00ff00",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

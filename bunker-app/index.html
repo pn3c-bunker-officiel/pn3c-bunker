@@ -2,86 +2,122 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>PN3C BUNKER</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PN3C - ALERTE CITOYENNE CI</title>
 <style>
-body{background:#0a0a0a;color:#FFD700;font-family:Arial,sans-serif;padding:15px;text-align:center;margin:0}
-h1{margin:10px 0;font-size:24px}
-.card{background:#1a1a1a;border:1px solid #FFD700;border-radius:20px;padding:20px;margin:15px 0}
-.btn{width:100%;padding:18px;border-radius:15px;border:none;font-weight:bold;font-size:16px;margin:8px 0;display:block;text-decoration:none;cursor:pointer}
-.btn-red{background:#FF0000;color:white}
-.btn-gold{background:#FFD700;color:black}
+body{margin:0;background:#0a0a0a;color:white;font-family:Arial,sans-serif}
+.header{background:linear-gradient(90deg,#FF8200 33%,#fff 33%,#fff 66%,#00A651 66%);padding:15px;text-align:center;color:#000;font-weight:bold}
+.flag{font-size:30px}
+.container{padding:15px;max-width:500px;margin:auto}
+.card{background:#1a1a1a;border:1px solid #FFD700;border-radius:18px;padding:18px;margin:14px 0}
+.btn{width:100%;padding:16px;border-radius:14px;border:none;font-weight:bold;font-size:15px;margin:8px 0;display:block;text-decoration:none;cursor:pointer;text-align:center}
+.btn-red{background:#ff0000;color:#fff}
+.btn-green{background:#00A651;color:#fff}
+.btn-orange{background:#FF8200;color:#000}
+.btn-gold{background:#FFD700;color:#000}
 .btn-black{background:#000;color:#FFD700;border:2px solid #FFD700}
-input{width:90%;padding:12px;border-radius:10px;border:1px solid #FFD700;background:#000;color:#FFD700;margin:5px}
-#pos{font-size:12px;color:#aaa;margin-top:10px;word-break:break-all}
+input,textarea{width:92%;padding:12px;border-radius:10px;border:1px solid #FFD700;background:#000;color:#FFD700;margin:6px 0}
+small{color:#aaa;font-size:11px}
+h2{color:#FFD700;margin:5px 0}
+.badge{background:#FFD700;color:#000;padding:3px 8px;border-radius:20px;font-size:11px}
 </style>
 </head>
 <body>
-<h1>🛡️ PN3C BUNKER</h1>
-<p style="font-size:12px">Protégé par Jésus-Christ // Opérationnel</p>
+<div class="header">
+<div class="flag">🇨🇮</div>
+PN3C - PLATEFORME NATIONALE D'ALERTE CITOYENNE<br>
+<span style="font-size:12px">RÉPUBLIQUE DE CÔTE D'IVOIRE - Protégé par Jésus-Christ</span>
+</div>
 
-<div class="card">
-<h3>🚨 URGENCE</h3>
-<button class="btn btn-red" onclick="sos()">🚨 ALERTE SOS + MA POSITION</button>
-<button class="btn btn-black" onclick="getPosition()">📍 VOIR MA POSITION (TRACKER)</button>
-<div id="pos">Position non chargée</div>
+<div class="container">
+<div class="card" style="text-align:center">
+<h2>AKWABA - BIENVENUE</h2>
+<p style="font-size:13px">Ici c'est le BUNKER PN3C. Site d'alerte citoyenne pour signaler un danger, partager ta position et prévenir la communauté en 1 clic.</p>
+<span class="badge">🟢 SYSTÈME OPÉRATIONNEL</span> <span class="badge" id="posStatus">📡 GPS: en attente</span>
+<p id="posText" style="font-size:11px;color:#FFD700;margin-top:8px"></p>
 </div>
 
 <div class="card">
-<h3>📢 GROUPE WHATSAPP</h3>
-<button class="btn btn-gold" onclick="alerteGroupe()">📢 ENVOYER ALERTE AU GROUPE PN3C</button>
-<a id="waLink" class="btn btn-black" href="https://chat.whatsapp.com/TON-LIEN-GROUPE-ICI" target="_blank">💬 OUVRIR LE GROUPE WHATSAPP</a>
-<p style="font-size:11px;color:#aaa">Remplace le lien du groupe dans le code après</p>
+<h3>🚨 URGENCE VITALE</h3>
+<textarea id="msgSOS" placeholder="Ex: Besoin d'aide urgent à Yopougon, carrefour..."></textarea>
+<button class="btn btn-red" onclick="sendSOS()">🚨 ENVOYER SOS + MA POSITION DANS WHATSAPP</button>
+<small>Ça va ouvrir WhatsApp directement avec ta position Google Maps.</small>
+</div>
+
+<div class="card">
+<h3>📢 ALERTE COMMUNAUTAIRE</h3>
+<textarea id="msgAlerte" placeholder="Ex: Route bloquée à Cocody, prudence..."></textarea>
+<button class="btn btn-orange" onclick="sendAlerte()">📢 PARTAGER ALERTE AU GROUPE</button>
+<button class="btn btn-green" onclick="sharePos()">📍 PARTAGER SEULEMENT MA POSITION</button>
 </div>
 
 <div class="card">
 <h3>🔐 MON COFFRE SECRET</h3>
-<input type="password" id="code" placeholder="Tape ton code secret">
-<button class="btn btn-black" onclick="sauver()">🔒 CACHER DANS LE COFFRE</button>
-<button class="btn btn-black" onclick="voir()">👁️ VOIR MON COFFRE</button>
-<div id="coffreMsg" style="font-size:13px;margin-top:10px"></div>
+<input type="password" id="code" placeholder="Code, contact famille, info secrète">
+<div style="display:flex;gap:8px">
+<button class="btn btn-black" style="flex:1" onclick="sauver()">🔒 CACHER</button>
+<button class="btn btn-black" style="flex:1" onclick="voir()">👁️ VOIR</button>
+</div>
+<p id="coffreMsg" style="font-size:12px;color:#FFD700"></p>
+</div>
+
+<div class="card" style="text-align:center">
+<h3>💬 ACCÈS RAPIDE</h3>
+<a class="btn btn-gold" href="https://chat.whatsapp.com/TON-LIEN-GROUPE-ICI" target="_blank">💬 OUVRIR GROUPE WHATSAPP PN3C</a>
+<a class="btn btn-black" href="https://pn3c-bunker-officiel.github.io/pn3c-bunker/">🏠 RETOUR ACCUEIL OFFICIEL</a>
+<small>Remplace TON-LIEN-GROUPE-ICI par ton vrai lien dans le code</small>
+</div>
 </div>
 
 <script>
-let lat="", lon="";
-function getPosition(){
-  document.getElementById('pos').innerText="Chargement GPS...";
-  navigator.geolocation.getCurrentPosition(p=>{
-    lat=p.coords.latitude; lon=p.coords.longitude;
-    document.getElementById('pos').innerHTML=`✅ Position trouvée:<br>${lat}, ${lon}<br><a style="color:#FFD700" target="_blank" href="https://www.google.com/maps?q=${lat},${lon}">Voir sur Google Maps</a>`;
-  }, e=>{ document.getElementById('pos').innerText="GPS refusé. Active le GPS de ton téléphone!"; });
+let lat=0, lon=0, hasPos=false;
+function updatePos(){
+ navigator.geolocation.getCurrentPosition(p=>{
+  lat=p.coords.latitude; lon=p.coords.longitude; hasPos=true;
+  document.getElementById('posStatus').innerText="📡 GPS: OK";
+  document.getElementById('posText').innerHTML=`✅ ${lat.toFixed(5)}, ${lon.toFixed(5)} - <a style="color:#FFD700" target="_blank" href="https://www.google.com/maps?q=${lat},${lon}">Voir Maps</a>`;
+ }, e=>{
+  document.getElementById('posStatus').innerText="📡 GPS: Autorise le GPS";
+ });
+}
+updatePos();
+
+function openWhatsApp(text){
+ // LA VRAIE API QUI MARCHE - pas de prompt qui bloque
+ let url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+ window.open(url, '_blank');
 }
 
-function sos(){
-  let msg = prompt("Quel est le danger? (ex: besoin d'aide à Cocody)");
-  if(!msg) return;
-  getPosition();
-  setTimeout(()=>{
-    let text = `🚨 SOS PN3C BUNKER 🚨\n${msg}\nMa position: https://www.google.com/maps?q=${lat},${lon}\nEnvoyé depuis BUNKER App`;
-    // LIEN WHATSAPP API
-    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-  },1500);
+function sendSOS(){
+ let msg = document.getElementById('msgSOS').value || "SOS URGENT PN3C - J'ai besoin d'aide!";
+ let map = hasPos ? `https://www.google.com/maps?q=${lat},${lon}` : "Position GPS non disponible (active le GPS)";
+ let full = `🚨🚨 SOS PN3C - ALERTE CITOYENNE CI 🇨🇮\n\n${msg}\n\n📍 MA POSITION:\n${map}\n\nEnvoyé depuis BUNKER PN3C: https://pn3c-bunker-officiel.github.io/pn3c-bunker/bunker-app/`;
+ openWhatsApp(full);
 }
 
-function alerteGroupe(){
-  let msg = prompt("Message pour tout le groupe PN3C:");
-  if(!msg) return;
-  let text = `📢 ALERTE PN3C BUNKER\n${msg}\nhttps://pn3c-bunker-officiel.github.io/pn3c-bunker/`;
-  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+function sendAlerte(){
+ let msg = document.getElementById('msgAlerte').value || "Alerte PN3C";
+ let full = `📢 ALERTE PN3C CITOYENNE 🇨🇮\n\n${msg}\n\nSite officiel: https://pn3c-bunker-officiel.github.io/pn3c-bunker/`;
+ openWhatsApp(full);
+}
+
+function sharePos(){
+ if(!hasPos) return alert("Active ton GPS d'abord et attends 3 sec!");
+ let full = `📍 MA POSITION PN3C 🇨🇮\nJe suis ici: https://www.google.com/maps?q=${lat},${lon}`;
+ openWhatsApp(full);
 }
 
 function sauver(){
-  let c=document.getElementById('code').value;
-  if(!c) return alert("Tape un code!");
-  localStorage.setItem('pn3c_coffre', c);
-  document.getElementById('coffreMsg').innerText="✅ Caché! Même si on vole ton tel, sans l'app on ne peut pas voir.";
-  document.getElementById('code').value="";
+ let c=document.getElementById('code').value;
+ if(!c) return alert("Tape quelque chose!");
+ localStorage.setItem('pn3c_coffre', c);
+ document.getElementById('coffreMsg').innerText="✅ Sauvegardé en local (caché dans ton tel)";
+ document.getElementById('code').value="";
 }
 function voir(){
-  let c=localStorage.getItem('pn3c_coffre');
-  document.getElementById('coffreMsg').innerText= c ? "🔓 Ton secret: "+c : "Coffre vide";
+ let c=localStorage.getItem('pn3c_coffre');
+ document.getElementById('coffreMsg').innerText= c ? "🔓 Secret: "+c : "Coffre vide";
 }
-getPosition();
 </script>
 </body>
 </html>

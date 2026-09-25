@@ -37,13 +37,7 @@ textarea,input{width:92%;padding:10px;border-radius:8px;background:#000;color:#F
 <div class="card">
 <textarea id="msgAlerte" placeholder="Alerte ex: Route bloquée..."></textarea>
 <button class="btn btn-orange" onclick="sendAlerte()">📢 ENVOYER ALERTE CITOYENNE</button>
-<a class="btn btn-gold" href="https://chat.whatsapp.com/LK7I37Y6phLAUlzqznZQnD" target="_blank">💬 OUVRIR GROUPE GUARDIAN CI-TOUR DE CONTRÔLE</a>
-</div>
-<div class="card">
-<h4 style="margin:0;color:#FFD700">🔐 COFFRE</h4>
-<input type="password" id="code" placeholder="Code secret">
-<div style="display:flex;gap:6px"><button class="btn btn-black" style="flex:1" onclick="sauver()">CACHER</button><button class="btn btn-black" style="flex:1" onclick="voir()">VOIR</button></div>
-<p id="coffreMsg" style="font-size:11px;color:#FFD700"></p>
+<a class="btn btn-gold" href="https://chat.whatsapp.com/LK7I37Y6phLAUlzqznZQnD" target="_blank">💬 OUVRIR GROUPE GUARDIAN CI</a>
 </div>
 </div>
 <script>
@@ -51,33 +45,12 @@ let lat=0,lon=0,hasPos=false,map,marker;
 map=L.map('map').setView([5.359, -4.008],13);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 marker=L.marker([5.359,-4.008]).addTo(map).bindPopup("TOUR DE CONTRÔLE PN3C");
-function onPos(p){
- lat=p.coords.latitude; lon=p.coords.longitude; hasPos=true;
- let s=(p.coords.speed||0)*3.6;
- document.getElementById('speed').innerText=s.toFixed(1)+" km/h";
- document.getElementById('alt').innerText=(p.coords.altitude||0).toFixed(0)+" m";
- document.getElementById('latlon').innerText=lat.toFixed(5)+"\n"+lon.toFixed(5);
- document.getElementById('acc').innerText="±"+(p.coords.accuracy||0).toFixed(0)+"m";
- document.getElementById('status').innerText="✅ GPS OK - "+new Date().toLocaleTimeString();
- map.setView([lat,lon],16);
- marker.setLatLng([lat,lon]).bindPopup(`📍 Tu es ici<br>${lat.toFixed(5)},${lon.toFixed(5)}<br>${s.toFixed(1)} km/h`).openPopup();
-}
+function onPos(p){lat=p.coords.latitude; lon=p.coords.longitude; hasPos=true; let s=(p.coords.speed||0)*3.6; document.getElementById('speed').innerText=s.toFixed(1)+" km/h"; document.getElementById('alt').innerText=(p.coords.altitude||0).toFixed(0)+" m"; document.getElementById('latlon').innerText=lat.toFixed(5)+"\n"+lon.toFixed(5); document.getElementById('acc').innerText="±"+(p.coords.accuracy||0).toFixed(0)+"m"; document.getElementById('status').innerText="✅ GPS OK - "+new Date().toLocaleTimeString(); map.setView([lat,lon],16); marker.setLatLng([lat,lon]).bindPopup(`📍 Tu es ici<br>${lat.toFixed(5)},${lon.toFixed(5)}<br>${s.toFixed(1)} km/h`).openPopup();}
 function onErr(){document.getElementById('status').innerText="❌ Active ton GPS";}
 navigator.geolocation.watchPosition(onPos,onErr,{enableHighAccuracy:true,maximumAge:0});
+function saveAlert(type,msg){let alerts=JSON.parse(localStorage.getItem('pn3c_alerts')||'[]'); alerts.push({heure:new Date().toLocaleString(),type:type,msg:msg,lat:lat,lon:lon}); localStorage.setItem('pn3c_alerts',JSON.stringify(alerts));}
 function openWA(t){window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank");}
-function sendSOS(){
- let m=document.getElementById('msgSOS').value||"SOS PN3C URGENT!";
- let link=hasPos?`https://www.google.com/maps?q=${lat},${lon}`:"GPS non disponible";
- openWA(`🚨 SOS PN3C 🇨🇮\n${m}\n📍 ${link}\nVitesse: ${document.getElementById('speed').innerText}\nSite: https://pn3c-bunker-officiel.github.io/pn3c-bunker/bunker-app/`);
-}
-function sharePos(){
- if(!hasPos) return alert("Attends le GPS!");
- openWA(`📍 MA POSITION TEMPS RÉEL PN3C 🇨🇮\nhttps://www.google.com/maps?q=${lat},${lon}\nVitesse: ${document.getElementById('speed').innerText}`);
-}
-function sendAlerte(){
- let m=document.getElementById('msgAlerte').value||"Alerte PN3C";
- openWA(`📢 ALERTE PN3C CITOYENNE 🇨🇮\n${m}\nhttps://pn3c-bunker-officiel.github.io/pn3c-bunker/`);
-}
-function sauver(){let c=document.getElementById('code').value; if(!c)return; localStorage.setItem('pn3c_coffre',c); document.getElementById('coffreMsg').innerText="✅ Caché"; document.getElementById('code').value="";}
-function voir(){let c=localStorage.getItem('pn3c_coffre'); document.getElementById('coffreMsg').innerText=c?"🔓 "+c:"Vide";}
+function sendSOS(){let m=document.getElementById('msgSOS').value||"SOS PN3C URGENT!"; saveAlert("SOS",m); let link=hasPos?`https://www.google.com/maps?q=${lat},${lon}`:"GPS non disponible"; openWA(`🚨 SOS PN3C 🇨🇮\n${m}\n📍 ${link}\nVitesse: ${document.getElementById('speed').innerText}\nSite: https://pn3c-bunker-officiel.github.io/pn3c-bunker/bunker-app/`);}
+function sharePos(){if(!hasPos) return alert("Attends le GPS!"); openWA(`📍 MA POSITION TEMPS RÉEL PN3C 🇨🇮\nhttps://www.google.com/maps?q=${lat},${lon}\nVitesse: ${document.getElementById('speed').innerText}`);}
+function sendAlerte(){let m=document.getElementById('msgAlerte').value||"Alerte PN3C"; saveAlert("ALERTE",m); openWA(`📢 ALERTE PN3C CITOYENNE 🇨🇮\n${m}\nhttps://pn3c-bunker-officiel.github.io/pn3c-bunker/`);}
 </script></body></html>

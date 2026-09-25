@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PN3C - ACCES FDS RESTREINT</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+body{margin:0;background:#0a0a0a;color:#00ff00;font-family:monospace}
+.login{height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000}
+.card{background:#111;border:1px solid #FFD700;border-radius:12px;padding:20px;margin:10px;width:90%;max-width:500px;color:#fff;font-family:Arial}
+input{width:90%;padding:12px;background:#000;color:#FFD700;border:1px solid #FFD700;border-radius:8px}
+.btn{width:100%;padding:12px;border-radius:8px;border:none;font-weight:bold;margin-top:10px;cursor:pointer}
+.btn-gold{background:#FFD700} .btn-red{background:#ff0000;color:#fff}
+#dashboard{display:none;padding:10px}
+#mapFDS{height:350px;border-radius:10px;border:2px solid #00ff00}
+table{width:100%;font-size:11px;border-collapse:collapse;margin-top:10px}
+th{background:#FFD700;color:#000;padding:6px} td{border:1px solid #333;padding:5px}
+</style>
+</head><body>
+<div id="login" class="login">
+<h2 style="color:#FFD700">🔐 ACCES FDS RESTREINT</h2>
+<p style="color:#fff;font-family:Arial">PN3C - Système Militaire</p>
+<input type="password" id="codeFDS" placeholder="Code d'accès FDS">
+<button class="btn btn-gold" onclick="check()">ENTRER</button>
+<p id="err" style="color:red;font-family:Arial"></p>
+<small style="color:#666">Indice: PN3C-2026-CI</small>
+</div>
+
+<div id="dashboard">
+<div style="background:linear-gradient(90deg,#FF8200,#fff,#00A651);color:#000;padding:10px;text-align:center;font-weight:bold;font-family:Arial">🇨🇮 PN3C - TOUR DE CONTRÔLE FDS - VOLET TECHNIQUE</div>
+<div class="card">
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;text-align:center">
+<div style="background:#000;padding:8px;border-radius:8px"><small>TOTAL ALERTES</small><br><b id="total" style="color:#FFD700;font-size:20px">0</b></div>
+<div style="background:#000;padding:8px;border-radius:8px"><small>DERNIER SOS</small><br><b id="last" style="color:#00ff00;font-size:12px">--</b></div>
+<div style="background:#000;padding:8px;border-radius:8px"><small>STATUT</small><br><b style="color:#00ff00">OPÉRATIONNEL</b></div>
+</div>
+</div>
+<div class="card"><h4 style="margin:0;color:#00ff00">🗺️ CARTOGRAPHIE DES INCIDENTS</h4><div id="mapFDS"></div></div>
+<div class="card">
+<h4 style="margin:0">📋 JOURNAL DES ALERTES (Local)</h4>
+<table><thead><tr><th>HEURE</th><th>TYPE</th><th>POSITION</th><th>MESSAGE</th></tr></thead><tbody id="tbody"></tbody></table>
+<div style="display:flex;gap:6px">
+<button class="btn btn-gold" onclick="exportTXT()">📤 EXPORTER RAPPORT TXT</button>
+<button class="btn btn-red" onclick="clearAll()">🗑️ EFFACER JOURNAL</button>
+</div>
+</div>
+<div class="card" style="font-size:11px;color:#888">Système PN3C - Protégé par Jésus-Christ - Accès audité - Toute connexion est tracée</div>
+</div>
+
+<script>
+function check(){
+ if(document.getElementById('codeFDS').value==="PN3C-2026-CI"){
+  document.getElementById('login').style.display='none';
+  document.getElementById('dashboard').style.display='block';
+  initFDS();
+ } else {document.getElementById('err').innerText="❌ Code incorrect - Accès refusé";}
+}
+let mapFDS;
+function initFDS(){
+ mapFDS=L.map('mapFDS').setView([5.359,-4.008],12);
+ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapFDS);
+ let alerts=JSON.parse(localStorage.getItem('pn3c_alerts')||'[]');
+ document.getElementById('total').innerText=alerts.length;
+ if(alerts.length>0) document.getElementById('last').innerText=alerts[alerts.length-1].heure;
+ let tbody=document.getElementById('tbody'); tbody.innerHTML="";
+ alerts.slice().reverse().forEach(a=>{
+  let tr=document.createElement('tr');
+  tr.innerHTML=`<td>${a.heure}</td><td>${a.type}</td><td><a href="https://www.google.com/maps?q=${a.lat},${a.lon}" target="_blank" style="color:#FFD700">${a.lat.toFixed(4)},${a.lon.toFixed(4)}</a></td><td>${a.msg}</td>`;
+  tbody.appendChild(tr);
+  L.marker([a.lat,a.lon]).addTo(mapFDS).bindPopup(`${a.type}<br>${a.msg}<br>${a.heure}`);
+ });
+ if(alerts.length==0) tbody.innerHTML="<tr><td colspan=4 style='text-align:center;color:#666'>Aucune alerte enregistrée - En attente...</td></tr>";
+}
+function exportTXT(){
+ let alerts=JSON.parse(localStorage.getItem('pn3c_alerts')||'[]');
+ let txt="RAPPORT PN3C - VOLET FDS\nDate: "+new Date().toLocaleString()+"\n\n";
+ alerts.forEach(a=>{txt+=`[${a.heure}] ${a.type} - ${a.lat},${a.lon} - ${a.msg}\nLien: https://www.google.com/maps?q=${a.lat},${a.lon}\n\n`;});
+ let blob=new Blob([txt],{type:'text/plain'}); let url=URL.createObjectURL(blob);
+ let a=document.createElement('a'); a.href=url; a.download='rapport_PN3C_FDS_'+Date.now()+'.txt'; a.click();
+}
+function clearAll(){if(confirm("Effacer tout le journal FDS?")){localStorage.removeItem('pn3c_alerts'); location.reload();}}
+</script>
+</body></html>

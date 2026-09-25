@@ -1,19 +1,14 @@
 {
-  "name": "PN3C BUNKER OFFICIEL",
-  "short_name": "PN3C BUNKER",
-  "description": "Le Bunker sécurisé du PN3C - Messagerie chiffrée et Coffre-fort",
-  "start_url": "./index.html",
+  "name": "PN3C GUARDIAN CI",
+  "short_name": "PN3C",
+  "description": "Système d'alerte citoyen & FDS - Protégé par Jésus-Christ",
+  "start_url": "/pn3c-bunker/bunker-app/",
   "display": "standalone",
-  "background_color": "#0a0a0a",
-  "theme_color": "#00ff00",
+  "background_color": "#000000",
+  "theme_color": "#FFD700",
   "icons": [
     {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "icon-512.png",
+      "src": "https://cdn-icons-png.flaticon.com/512/2091/2091665.png",
       "sizes": "512x512",
       "type": "image/png"
     }

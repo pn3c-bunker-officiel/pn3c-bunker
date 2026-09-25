@@ -1,0 +1,14 @@
+{
+  "packageId": "ci.pn3c.guardian",
+  "host": "pn3c-bunker-officiel.github.io",
+  "name": "PN3C GUARDIAN CI",
+  "launcherName": "PN3C",
+  "display": "standalone",
+  "themeColor": "#FFD700",
+  "navigationColor": "#000000",
+  "backgroundColor": "#000000",
+  "startUrl": "/pn3c-bunker/bunker-app/",
+  "iconUrl": "https://cdn-icons-png.flaticon.com/512/2091/2091665.png",
+  "maskableIconUrl": "https://cdn-icons-png.flaticon.com/512/2091/2091665.png",
+  "splashScreenFadeOutDuration": 300
+}

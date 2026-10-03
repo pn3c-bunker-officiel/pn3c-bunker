@@ -33,6 +33,7 @@ textarea,input{width:92%;padding:10px;border-radius:8px;background:#000;color:#F
 <small id="status" style="color:#FFD700">📡 Recherche GPS...</small>
 </div>
 <div class="card">
+<input id="numPerso" placeholder="Numéro perso urgence ex: 22507..." onchange="localStorage.setItem('pn3c_numero_perso',this.value)" style="margin-bottom:8px">
 <textarea id="msgSOS" placeholder="Message SOS ex: Danger à Cocody..."></textarea>
 <button class="btn btn-red" onclick="sendSOS()">🚨 SOS + POSITION MAPS DANS WHATSAPP</button>
 <button class="btn btn-green" onclick="sharePos()">📍 PARTAGER POSITION TEMPS RÉEL</button>
@@ -51,9 +52,44 @@ marker=L.marker([5.359,-4.008]).addTo(map).bindPopup("TOUR DE CONTRÔLE PN3C");
 function onPos(p){lat=p.coords.latitude; lon=p.coords.longitude; hasPos=true; let s=(p.coords.speed||0)*3.6; document.getElementById('speed').innerText=s.toFixed(1)+" km/h"; document.getElementById('alt').innerText=(p.coords.altitude||0).toFixed(0)+" m"; document.getElementById('latlon').innerText=lat.toFixed(5)+"\n"+lon.toFixed(5); document.getElementById('acc').innerText="±"+(p.coords.accuracy||0).toFixed(0)+"m"; document.getElementById('status').innerText="✅ GPS OK - "+new Date().toLocaleTimeString(); map.setView([lat,lon],16); marker.setLatLng([lat,lon]).bindPopup(`📍 Tu es ici<br>${lat.toFixed(5)},${lon.toFixed(5)}<br>${s.toFixed(1)} km/h`).openPopup();}
 function onErr(){document.getElementById('status').innerText="❌ Active ton GPS";}
 navigator.geolocation.watchPosition(onPos,onErr,{enableHighAccuracy:true,maximumAge:0});
-function saveAlert(type,msg){let alerts=JSON.parse(localStorage.getItem('pn3c_alerts')||'[]'); alerts.push({heure:new Date().toLocaleString(),type:type,msg:msg,lat:lat,lon:lon}); localStorage.setItem('pn3c_alerts',JSON.stringify(alerts));}
-function openWA(t){window.open("https://wa.me/22557506499?text="+encodeURIComponent(t),"_blank");}
-function sendSOS(){let m=document.getElementById('msgSOS').value||"SOS PN3C URGENT!"; saveAlert("SOS",m); let link=hasPos?`https://www.google.com/maps?q=${lat},${lon}`:"GPS non disponible"; openWA(`🚨 SOS PN3C 🇨🇮\n${m}\n📍 ${link}\nVitesse: ${document.getElementById('speed').innerText}\nSite: https://pn3c-bunker-officiel.github.io/pn3c-bunker/bunker-app/`);}
-function sharePos(){if(!hasPos) return alert("Attends le GPS!"); openWA(`📍 MA POSITION TEMPS RÉEL PN3C 🇨🇮\nhttps://www.google.com/maps?q=${lat},${lon}\nVitesse: ${document.getElementById('speed').innerText}`);}
-function sendAlerte(){let m=document.getElementById('msgAlerte').value||"Alerte PN3C"; saveAlert("ALERTE",m); openWA(`📢 ALERTE PN3C CITOYENNE 🇨🇮\n${m}\nhttps://pn3c-bunker-officiel.github.io/pn3c-bunker/`);}
-</script></body></html>
+const CCO_KEY='pn3c_alertes_cco';
+const NUM_PERSO_KEY='pn3c_numero_perso';
+const NUM_CCO='225575000000'; // <-- REMPLACE par le numéro CCO complet
+
+function saveAlert(type,msg){
+  let a=JSON.parse(localStorage.getItem(CCO_KEY)||'[]');
+  a.unshift({id:Date.now(),type,message:msg,heure:new Date().toLocaleString()});
+  localStorage.setItem(CCO_KEY,JSON.stringify(a));
+}
+
+function openWA(msg){
+  let perso=localStorage.getItem(NUM_PERSO_KEY)||document.getElementById('numPerso')?.value;
+  if(perso){
+    localStorage.setItem(NUM_PERSO_KEY,perso);
+    window.open(`https://wa.me/${perso}?text=${encodeURIComponent(msg)}`,'_blank');
+  }
+  window.open(`https://wa.me/${NUM_CCO}?text=${encodeURIComponent(msg)}`,'_blank');
+}
+
+function sendSOS(){
+  let m=document.getElementById('msgSOS').value||'SOS URGENCE PN3C';
+  let full=`🚨 SOS - PN3C BUNKER 🚨\n${m}\nPos: ${lat},${lon}\nhttps://maps.google.com/?q=${lat},${lon}\nHeure: ${new Date().toLocaleString()}`;
+  saveAlert('SOS',full);
+  openWA(full);
+  alert('✅ Alerte envoyée CCO + Perso!');
+}
+
+function sendAlerte(){
+  let m=document.getElementById('msgAlerte').value||'Alerte PN3C';
+  let full=`⚠️ ALERTE - PN3C\n${m}\nPos: ${lat},${lon}\nHeure: ${new Date().toLocaleString()}`;
+  saveAlert('ALERTE',full);
+  openWA(full);
+  alert('✅ Alerte envoyée!');
+}
+
+function sharePos(){
+  if(!hasPos) return alert("Attends la position GPS");
+  let full=`📍 Position PN3C\nhttps://maps.google.com/?q=${lat},${lon}\nPrécision: ${document.getElementById('acc')?.innerText}`;
+  openWA(full);
+}
+</script></body></html></script></body></html>

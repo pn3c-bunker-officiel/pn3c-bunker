@@ -52,7 +52,7 @@ function onPos(p){lat=p.coords.latitude; lon=p.coords.longitude; hasPos=true; le
 function onErr(){document.getElementById('status').innerText="❌ Active ton GPS";}
 navigator.geolocation.watchPosition(onPos,onErr,{enableHighAccuracy:true,maximumAge:0});
 function saveAlert(type,msg){let alerts=JSON.parse(localStorage.getItem('pn3c_alerts')||'[]'); alerts.push({heure:new Date().toLocaleString(),type:type,msg:msg,lat:lat,lon:lon}); localStorage.setItem('pn3c_alerts',JSON.stringify(alerts));}
-function openWA(t){window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank");}
+function openWA(t){window.open("https://wa.me/22557506499?text="+encodeURIComponent(t),"_blank");}
 function sendSOS(){let m=document.getElementById('msgSOS').value||"SOS PN3C URGENT!"; saveAlert("SOS",m); let link=hasPos?`https://www.google.com/maps?q=${lat},${lon}`:"GPS non disponible"; openWA(`🚨 SOS PN3C 🇨🇮\n${m}\n📍 ${link}\nVitesse: ${document.getElementById('speed').innerText}\nSite: https://pn3c-bunker-officiel.github.io/pn3c-bunker/bunker-app/`);}
 function sharePos(){if(!hasPos) return alert("Attends le GPS!"); openWA(`📍 MA POSITION TEMPS RÉEL PN3C 🇨🇮\nhttps://www.google.com/maps?q=${lat},${lon}\nVitesse: ${document.getElementById('speed').innerText}`);}
 function sendAlerte(){let m=document.getElementById('msgAlerte').value||"Alerte PN3C"; saveAlert("ALERTE",m); openWA(`📢 ALERTE PN3C CITOYENNE 🇨🇮\n${m}\nhttps://pn3c-bunker-officiel.github.io/pn3c-bunker/`);}

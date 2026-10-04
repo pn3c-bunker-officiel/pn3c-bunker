@@ -1,95 +1,50 @@
 <!DOCTYPE html>
-<html lang="fr"><head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PN3C - TOUR DE CONTRÔLE CI</title>
-<meta name="description" content="PN3C GUARDIAN CI - Système d'alerte citoyenne et FDS pour la Côte d'Ivoire - Protégé par Jésus-Christ">
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#FFD700">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PN3C BUNKER - SOS</title>
 <style>
-body{margin:0;background:#000;color:#fff;font-family:Arial}
-.header{background:linear-gradient(90deg,#FF8200 33%,#fff 33%,#fff 66%,#00A651 66%);padding:12px;text-align:center;color:#000;font-weight:bold}
-.container{padding:10px;max-width:550px;margin:auto}
-.card{background:#111;border:1px solid #FFD700;border-radius:16px;padding:14px;margin:12px 0}
-.btn{width:100%;padding:15px;border-radius:12px;border:none;font-weight:bold;margin:6px 0;cursor:pointer;display:block;text-align:center;text-decoration:none}
-.btn-red{background:#ff0000;color:#fff} .btn-green{background:#00A651;color:#fff} .btn-orange{background:#FF8200;color:#000} .btn-gold{background:#FFD700;color:#000} .btn-black{background:#222;color:#FFD700;border:1px solid #FFD700}
-#map{height:280px;border-radius:14px;border:2px solid #FFD700}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px}
-.box{background:#000;border:1px solid #333;padding:8px;border-radius:8px;text-align:center}
-.box b{color:#FFD700;font-size:16px}
-textarea,input{width:92%;padding:10px;border-radius:8px;background:#000;color:#FFD700;border:1px solid #FFD700}
+body{background:#000;color:#fff;font-family:Arial;padding:12px;margin:0}
+.card{background:#111;border:1px solid #333;border-radius:12px;padding:14px;margin-bottom:12px}
+input,textarea{width:100%;padding:12px;border-radius:8px;border:1px solid #555;background:#000;color:#fff;box-sizing:border-box;font-size:16px}
+button{width:100%;padding:14px;border:none;border-radius:8px;font-weight:bold;font-size:16px;margin-top:8px}
+.btn-red{background:#ff0000;color:#fff}
+.btn-orange{background:#ff6600;color:#fff}
+.btn-blue{background:#0066ff;color:#fff}
+.status{font-size:12px;color:#aaa}
 </style>
-</head><body>
-<div class="header">🇨🇮 PN3C - TOUR DE CONTRÔLE - CÔTE D'IVOIRE<br><small>GUARDIAN CI - Protégé par Jésus-Christ</small></div>
-<div class="container">
-<div class="card"><div id="map"></div>
-<div class="grid" style="margin-top:10px">
-<div class="box">VITESSE<br><b id="speed">0 km/h</b></div>
-<div class="box">ALTITUDE<br><b id="alt">0 m</b></div>
-<div class="box">LAT / LON<br><b id="latlon" style="font-size:10px">--</b></div>
-<div class="box">PRÉCISION<br><b id="acc">--</b></div>
+</head>
+<body>
+<h2 style="text-align:center;color:#ff0000">🛡️ PN3C BUNKER - SOS</h2>
+
+<div class="card" style="border-color:#ff0000">
+<h3 style="color:#ff0000;margin:0 0 8px 0;text-align:center">🚨 NUMERO D'URGENCE PERSO</h3>
+<p style="font-size:11px;color:#aaa;margin:0 0 8px 0;text-align:center">Ce numéro reçoit l'alerte en même temps que le CCO</p>
+<input id="numPerso" type="tel" placeholder="Ex: 2250700000000">
+<button class="btn-red" onclick="saveNumPerso()">💾 ENREGISTRER CE NUMERO</button>
+<p id="numPersoStatus" style="color:#0f0;font-size:12px;text-align:center;margin-top:8px"></p>
 </div>
-<small id="status" style="color:#FFD700">📡 Recherche GPS...</small>
-</div>
+
 <div class="card">
-<input id="numPerso" placeholder="Numéro perso urgence ex: 22507..." onchange="localStorage.setItem('pn3c_numero_perso',this.value)" style="margin-bottom:8px">
-<textarea id="msgSOS" placeholder="Message SOS ex: Danger à Cocody..."></textarea>
-<button class="btn btn-red" onclick="sendSOS()">🚨 SOS + POSITION MAPS DANS WHATSAPP</button>
-<button class="btn btn-green" onclick="sharePos()">📍 PARTAGER POSITION TEMPS RÉEL</button>
+<p id="status" class="status">📡 Recherche GPS...</p>
+<p>LAT: <span id="lat">--</span> | LON: <span id="lon">--</span> | <span id="acc">--</span></p>
+<button class="btn-blue" onclick="sharePos()">📍 PARTAGER POSITION</button>
 </div>
+
 <div class="card">
-<textarea id="msgAlerte" placeholder="Alerte ex: Route bloquée..."></textarea>
-<button class="btn btn-orange" onclick="sendAlerte()">📢 ENVOYER ALERTE CITOYENNE</button>
-<a class="btn btn-gold" href="https://chat.whatsapp.com/LK7I37Y6phLAUlzqznZQnD" target="_blank">💬 OUVRIR GROUPE GUARDIAN CI</a>
+<h3 style="color:#ff0000">🚨 SOS URGENCE</h3>
+<textarea id="msgSOS" rows="3" placeholder="Ex: Besoin aide immédiate, je suis en danger..."></textarea>
+<button class="btn-red" onclick="sendSOS()">🚨 LANCER SOS (2 ALERTES)</button>
+<p style="font-size:10px;color:#aaa;margin-top:6px">Envoie vers: 1. Ton numéro d'urgence perso + 2. CCO PN3C pour analyse et transfert aux secours</p>
 </div>
+
+<div class="card">
+<h3 style="color:#ff9900">⚠️ ALERTE</h3>
+<textarea id="msgAlerte" rows="2" placeholder="Signalement..."></textarea>
+<button class="btn-orange" onclick="sendAlerte()">⚠️ LANCER ALERTE</button>
 </div>
-<script>
-let lat=0,lon=0,hasPos=false,map,marker;
-map=L.map('map').setView([5.359, -4.008],13);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-marker=L.marker([5.359,-4.008]).addTo(map).bindPopup("TOUR DE CONTRÔLE PN3C");
-function onPos(p){lat=p.coords.latitude; lon=p.coords.longitude; hasPos=true; let s=(p.coords.speed||0)*3.6; document.getElementById('speed').innerText=s.toFixed(1)+" km/h"; document.getElementById('alt').innerText=(p.coords.altitude||0).toFixed(0)+" m"; document.getElementById('latlon').innerText=lat.toFixed(5)+"\n"+lon.toFixed(5); document.getElementById('acc').innerText="±"+(p.coords.accuracy||0).toFixed(0)+"m"; document.getElementById('status').innerText="✅ GPS OK - "+new Date().toLocaleTimeString(); map.setView([lat,lon],16); marker.setLatLng([lat,lon]).bindPopup(`📍 Tu es ici<br>${lat.toFixed(5)},${lon.toFixed(5)}<br>${s.toFixed(1)} km/h`).openPopup();}
-function onErr(){document.getElementById('status').innerText="❌ Active ton GPS";}
-navigator.geolocation.watchPosition(onPos,onErr,{enableHighAccuracy:true,maximumAge:0});
-const CCO_KEY='pn3c_alertes_cco';
-const NUM_PERSO_KEY='pn3c_numero_perso';
-const NUM_CCO='225575000000'; // <-- REMPLACE par le numéro CCO complet
 
-function saveAlert(type,msg){
-  let a=JSON.parse(localStorage.getItem(CCO_KEY)||'[]');
-  a.unshift({id:Date.now(),type,message:msg,heure:new Date().toLocaleString()});
-  localStorage.setItem(CCO_KEY,JSON.stringify(a));
-}
-
-function openWA(msg){
-  let perso=localStorage.getItem(NUM_PERSO_KEY)||document.getElementById('numPerso')?.value;
-  if(perso){
-    localStorage.setItem(NUM_PERSO_KEY,perso);
-    window.open(`https://wa.me/${perso}?text=${encodeURIComponent(msg)}`,'_blank');
-  }
-  window.open(`https://wa.me/${NUM_CCO}?text=${encodeURIComponent(msg)}`,'_blank');
-}
-
-function sendSOS(){
-  let m=document.getElementById('msgSOS').value||'SOS URGENCE PN3C';
-  let full=`🚨 SOS - PN3C BUNKER 🚨\n${m}\nPos: ${lat},${lon}\nhttps://maps.google.com/?q=${lat},${lon}\nHeure: ${new Date().toLocaleString()}`;
-  saveAlert('SOS',full);
-  openWA(full);
-  alert('✅ Alerte envoyée CCO + Perso!');
-}
-
-function sendAlerte(){
-  let m=document.getElementById('msgAlerte').value||'Alerte PN3C';
-  let full=`⚠️ ALERTE - PN3C\n${m}\nPos: ${lat},${lon}\nHeure: ${new Date().toLocaleString()}`;
-  saveAlert('ALERTE',full);
-  openWA(full);
-  alert('✅ Alerte envoyée!');
-}
-
-function sharePos(){
-  if(!hasPos) return alert("Attends la position GPS");
-  let full=`📍 Position PN3C\nhttps://maps.google.com/?q=${lat},${lon}\nPrécision: ${document.getElementById('acc')?.innerText}`;
-  openWA(full);
-}
-</script></body></html></script></body></html>
+<script src="app.js"></script>
+</body>
+</html>
